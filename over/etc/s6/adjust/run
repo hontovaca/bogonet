@@ -1,0 +1,7 @@
+#!/usr/bin/execlineb -P
+exec -c s6-envdir env
+forstdin -pd "\n" id
+import -i id # no -u
+backtick -i hash
+{ pipeline { echo $id } md5sum }
+miniperl data/hashpipe.pl
