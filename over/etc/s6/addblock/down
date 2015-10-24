@@ -1,0 +1,2 @@
+#!/usr/bin/execline -P
+ip a d 100.64.36.16/10 dev docker0
