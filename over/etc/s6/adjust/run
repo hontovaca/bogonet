@@ -19,7 +19,7 @@ ARGF.each_line do |raw|
   Process.detach(fork do
     cid = event["id"]
     info = YAML.load(IO.popen(["docker", "inspect", cid]).read)[0]
-    key = info["Config"]["Hostname"] + info["Name"]
+    key = info["Config"]["Hostname"]
 
     if (mode = info["HostConfig"]["NetworkMode"]) != "default"
       abort "#{key}: skipping, net=#{mode} not default"
