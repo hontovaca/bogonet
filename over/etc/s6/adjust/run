@@ -1,7 +1,36 @@
-#!/usr/bin/execlineb -P
-exec -c s6-envdir env
-forstdin -pd "\n" id
-import -i id # no -u
-backtick -i hash
-{ pipeline { echo $id } md5sum }
-miniperl data/hashpipe.pl
+#!/usr/bin/ruby
+require 'digest/sha2'
+require 'ipaddr'
+require 'yaml'
+
+ENV.clear
+ENV["PATH"] = "/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin"
+$stdout.sync = true
+YAML.load "" # XXX avoid attempting to look for files after chroot
+Dir.chroot "/mnt"
+Dir.chdir "/"
+
+system "ip", "addr", "replace", "100.64.36.16/10", "dev", "docker0"
+
+ARGF.each_line do |raw|
+  event = YAML.load raw
+  event["status"] == "start" or next
+
+  Process.detach(fork do
+    cid = event["id"]
+    info = YAML.load(IO.popen(["docker", "inspect", cid]).read)[0]
+    key = info["Config"]["Hostname"] + info["Name"]
+
+    if (mode = info["HostConfig"]["NetworkMode"]) != "default"
+      abort "#{key}: skipping, net=#{mode} not default"
+    end
+
+    hash = Digest::SHA2.new.update(key)
+    part = hash.hexdigest[0,6].hex % (1 << 22)
+    addr = IPAddr.new IPAddr.new("100.64.0.0").to_i + part, Socket::AF_INET
+
+    puts "#{key}: #{addr} (#{hash.base64digest[0,4]})"
+
+    exec "pipework", "docker0", cid, "#{addr}/32"
+  end)
+end
