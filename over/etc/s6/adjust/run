@@ -4,7 +4,7 @@ require 'ipaddr'
 require 'yaml'
 
 ENV.clear
-ENV["PATH"] = "/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin"
+ENV["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin"
 $stdout.sync = true
 YAML.load "" # XXX avoid attempting to look for files after chroot
 Dir.chroot "/mnt"
