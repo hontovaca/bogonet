@@ -1,0 +1,15 @@
+notify:
+  type: longrun
+  producer-for: adjust
+  run: |
+    #!/usr/bin/execlineb -P
+    chroot /mnt
+    curl -NsS --unix-socket /var/run/docker.sock
+    0/v1.20/containers/json
+    0/v1.20/events
+  install: 3
+
+adjust:
+  type: longrun
+  consumer-for: notify
+  run: !file /etc/rc/adjust.rb
