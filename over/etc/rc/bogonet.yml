@@ -10,6 +10,7 @@
   adjust:
     type: longrun
     consumer-for: notify
-- adjust.run = file_slurp "/etc/rc/adjust.rb"
+- adjust.run = file_slurp "/etc/rc/adjust.lua"
+  adjust{data = {["sha256.lua"] = file_slurp "/etc/rc/sha256/sha256.lua"}}
 - '3':
     contents: notify
