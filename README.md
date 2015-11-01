@@ -2,7 +2,7 @@
 
 Most of the time, if you want to give a service a name, you want to give it a name you might actually remember, like a hostname. Or maybe you don't really care what name it gets, as long as you can refer to it as part of a group.
 
-    docker run --net=host --privileged -v /:/mnt:ro vaca/bogonet
+    docker run -d --restart=always --net=host --privileged -v /:/mnt:ro vaca/bogonet
 
 If you're like me, you might just not care and just want a consistent address for a container that'll stay the same over restarts and reboots. Maybe even survive container destruction and recreation, but that might be a bit much.
 
