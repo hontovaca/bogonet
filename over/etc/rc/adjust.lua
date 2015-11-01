@@ -80,7 +80,7 @@ for raw in io.lines() do
     for i,s in ipairs(event) do
       event[i] = s.Id
     end
-    assert(unpack(event))
+    assign(unpack(event))
   else
     if event.status == "start" then
       assign(event.id)
