@@ -71,6 +71,15 @@ local function assign(...)
   end
 end
 
+do
+  local pid = posix.fork()
+  if pid > 0 then
+    posix.wait(pid)
+  else
+    posix.execp("ip", "addr", "replace", "100.64.36.16/10", "dev", "docker0")
+  end
+end
+
 io.stdin:setvbuf 'line'
 io.stdout:setvbuf 'line'
 for raw in io.lines() do
