@@ -6,7 +6,7 @@ local lyaml = require 'lyaml'
 local posix = require 'posix'
 local sha256 = require 'data/sha256'
 
-setmetatable(_G, {__index = function (t,k) error("global: " .. k) end})
+setmetatable(_G, {__index = function (t,k) error("global: " .. k, 2) end})
 
 ffi.cdef "char **environ"
 ffi.C.environ[0] = nil
