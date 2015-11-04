@@ -2,7 +2,7 @@ rc:merge {
   notify = {
     type = "longrun",
     producer_for = "adjust",
-    run = util.realign [[
+    run = realign [[
     #!/usr/bin/execlineb -P
     chroot /mnt
     curl -NsS --unix-socket /var/run/docker.sock
@@ -14,9 +14,9 @@ rc:merge {
   adjust = {
     type = "longrun",
     consumer_for = "notify",
-    run = util.file_slurp "bogonet/adjust.lua",
+    run = file_slurp "bogonet/adjust.lua",
     data = {
-      ["sha256.lua"] = util.file_slurp "bogonet/sha256/sha256.lua"
+      ["sha256.lua"] = file_slurp "bogonet/sha256/sha256.lua"
     }
   },
 
