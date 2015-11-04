@@ -1,8 +1,8 @@
 #!/usr/bin/luajit
 
 local ffi = require 'ffi'
+local json = require 'json'
 local lfs = require 'lfs'
-local lyaml = require 'lyaml'
 local posix = require 'posix'
 local sha256 = require 'data/sha256'
 
@@ -43,7 +43,7 @@ local function retrieve(...)
 end
 
 local function assign(...)
-  local res = lyaml.load(retrieve(...))
+  local res = json.decode(retrieve(...))
   for i,s in ipairs(res) do
     local cid = s.Id:sub(1,12)
     local key = s.Config.Hostname
@@ -83,7 +83,7 @@ end
 io.stdin:setvbuf 'line'
 io.stdout:setvbuf 'line'
 for raw in io.lines() do
-  local event = lyaml.load(raw)
+  local event = json.decode(raw)
 
   if #event > 0 then
     for i,s in ipairs(event) do
