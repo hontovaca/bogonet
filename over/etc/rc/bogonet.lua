@@ -3,7 +3,7 @@ rc:merge {
     type = "longrun",
     producer_for = "adjust",
     run = realign [[
-    #!/usr/bin/execlineb -P
+    #!/bin/execlineb -P
     chroot /mnt
     curl -NsS --unix-socket /var/run/docker.sock
     0/v1.20/containers/json
