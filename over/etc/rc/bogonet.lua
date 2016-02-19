@@ -15,9 +15,6 @@ rc:merge {
     type = "longrun",
     consumer_for = "notify",
     run = file_slurp "bogonet/adjust.lua",
-    data = {
-      ["sha256.lua"] = file_slurp "bogonet/sha256/sha256.lua"
-    }
   },
 
   [3] = { contents = "notify" },

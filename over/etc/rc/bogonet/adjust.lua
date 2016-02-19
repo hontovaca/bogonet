@@ -2,20 +2,25 @@
 
 local ffi = require 'ffi'
 local json = require 'json'
-local lfs = require 'lfs'
 local posix = require 'posix'
-local sha256 = require 'data/sha256'
 
 setmetatable(_G, {__index = function (t,k) error("global: " .. k, 2) end})
 
-ffi.cdef "char **environ"
+ffi.cdef[[
+char **environ;
+int chroot(const char *);
+int chdir(const char *);
+int crypto_hash_sha256(unsigned char *out, const unsigned char *in, unsigned long long inlen);
+]]
+
+local sodium = ffi.load 'sodium'
+
 ffi.C.environ[0] = nil
 posix.setenv("PATH",
 "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin")
 
-ffi.cdef "int chroot(const char *)"
 assert(ffi.C.chroot("/mnt") >= 0, "failed to chroot")
-lfs.chdir "/"
+assert(ffi.C.chdir("/")     >= 0, "failed to chdri")
 
 local function retrieve(...)
   local r,w = posix.pipe()
@@ -49,14 +54,11 @@ local function assign(...)
     local key = s.Config.Hostname
 
     if s.HostConfig.NetworkMode == "default" then
-      local hash = sha256.hex(key):sub(1,6)
-      local part = tonumber(hash, 16) % 0x400000 + 0x64400000
-      local dots = {}
-      for i=1,4 do
-        dots[5-i] = part % 256
-        part = (part - dots[5-i]) / 256
-      end
-      local addr = ("%d.%d.%d.%d"):format(unpack(dots))
+      local out = ffi.new("unsigned char[32]")
+      sodium.crypto_hash_sha256(out, key, #key)
+      local hash = bit.tohex(ffi.cast("uint32_t *", out)[0])
+      out[0] = bit.band(out[0], 31)
+      local addr = table.concat({100, 64+out[0], out[1], out[2]}, ".")
       print(("%s %s: %s (%s)"):format(cid, key, addr, hash))
 
       local pid = posix.fork()
