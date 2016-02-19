@@ -57,7 +57,7 @@ local function assign(...)
       local out = ffi.new("unsigned char[32]")
       sodium.crypto_hash_sha256(out, key, #key)
       local hash = bit.tohex(ffi.cast("uint32_t *", out)[0])
-      out[0] = bit.band(out[0], 31)
+      out[0] = bit.band(out[0], 63)
       local addr = table.concat({100, 64+out[0], out[1], out[2]}, ".")
       print(("%s %s: %s (%s)"):format(cid, key, addr, hash))
 
