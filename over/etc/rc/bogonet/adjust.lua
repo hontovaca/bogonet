@@ -20,7 +20,7 @@ posix.setenv("PATH",
 "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin")
 
 assert(ffi.C.chroot("/mnt") >= 0, "failed to chroot")
-assert(ffi.C.chdir("/")     >= 0, "failed to chdri")
+assert(ffi.C.chdir("/")     >= 0, "failed to chdir")
 
 local function retrieve(...)
   local r,w = posix.pipe()
