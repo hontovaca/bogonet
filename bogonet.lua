@@ -87,13 +87,18 @@ local function reconnect_output()
     ffi.C.dup2(r, 0)
     ffi.C.close(r)
     ffi.C.close(w)
-    execvp("s6-log", "T", "1")
+
+    for line in io.lines() do
+      print(os.date("%F %T\t", os.time()) .. line)
+    end
   end
 
   ffi.C.dup2(w, 1)
   ffi.C.dup2(w, 2)
   ffi.C.close(r)
   ffi.C.close(w)
+  io.stdout:setvbuf 'line'
+  io.stderr:setvbuf 'line'
 end
 
 local function reconnect_input()
@@ -115,6 +120,7 @@ local function reconnect_input()
   ffi.C.dup2(r, 0)
   ffi.C.close(r)
   ffi.C.close(w)
+  io.stdin:setvbuf 'line'
 end
 
 local function set_ip()
@@ -171,7 +177,6 @@ local function assign_ip(...)
   end
 end
 
-print "bogonet starting"
 reconnect_output()
 chroot_host()
 set_ip()
